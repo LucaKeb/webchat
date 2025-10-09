@@ -8,82 +8,78 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <section class="section">
-        <div class="container">
-
-            <div id="loginContainer" class="columns is-centered">
-                <div class="column is-half">
-                    <div class="box">
-                        <h2 class="title">Entrar no Chat</h2>
-                        <div class="field">
-                            <label for="username" class="label">Usuário</label>
-                            <div class="control">
-                                <input class="input" type="text" id="username" placeholder="Seu nome de usuário" autocomplete="username" />
-                            </div>
-                        </div>
-                        <div class="field">
-                            <label for="password" class="label">Senha</label>
-                            <div class="control">
-                                <input class="input" type="password" id="password" placeholder="Sua senha" autocomplete="current-password" />
-                            </div>
-                        </div>
-                        <div class="field is-grouped">
-                            <div class="control">
-                                <button id="loginBtn" class="button is-primary">Entrar</button>
-                            </div>
-                            <div class="control">
-                                <span id="message" class="has-text-grey"></span>
-                            </div>
-                        </div>
+    <div id="loginContainer" class="columns is-centered">
+        <div class="column is-half">
+            <div class="box">
+                <h2 class="title">Entrar no Chat</h2>
+                <div class="field">
+                    <label for="username" class="label">Usuário</label>
+                    <div class="control">
+                        <input class="input" type="text" id="username" placeholder="Seu nome de usuário" autocomplete="username" />
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="password" class="label">Senha</label>
+                    <div class="control">
+                        <input class="input" type="password" id="password" placeholder="Sua senha" autocomplete="current-password" />
+                    </div>
+                </div>
+                <div class="field is-grouped">
+                    <div class="control">
+                        <button id="loginBtn" class="button is-primary">Entrar</button>
+                    </div>
+                    <div class="control">
+                        <span id="message" class="has-text-grey"></span>
                     </div>
                 </div>
             </div>
-
-            <div id="chatContainer" style="display: none;">
-                <div class="columns">
-                    <aside class="column is-one-quarter">
-                        <nav class="panel">
-                            <p class="panel-heading">Usuários</p>
-                            <div class="panel-block">
-                                <div class="is-size-7 has-text-grey" id="presence"></div>
-                            </div>
-                             <div class="panel-block">
-                                <div class="is-size-7 has-text-grey-dark has-text-weight-bold" id="typing"></div>
-                            </div>
-                            <div id="users">
-                                </div>
-                        </nav>
-                        <button id="logoutBtn" class="button is-fullwidth is-light mt-4">Sair</button>
-                    </aside>
-
-                    <main class="column">
-                        <div class="tabs is-boxed" id="chatTabsContainer">
-                            <ul id="chatTabs">
-                                <li class="is-active" data-target="broadcast"><a>Broadcast</a></li>
-                                </ul>
-                        </div>
-
-                        <div id="chatBoxes">
-                            <div class="chat-window tab-content is-active" id="tab-broadcast">
-                                </div>
-                            </div>
-
-                        <div class="field is-grouped mt-4">
-                            <div class="control is-expanded">
-                                <input id="msg" class="input" type="text" placeholder="Digite sua mensagem" />
-                            </div>
-                            <div class="control">
-                                <button id="sendBtn" class="button is-info">Enviar</button>
-                            </div>
-                            <div class="control">
-                                <button id="clearBtn" class="button">Limpar</button>
-                            </div>
-                        </div>
-                    </main>
-                </div>
-            </div>
         </div>
-    </section>
+    </div>
+
+    <div id="chatContainer" style="display: none;">
+        <div class="columns">
+            <aside class="column is-one-quarter">
+                <nav class="panel">
+                    <p class="panel-heading">Usuários</p>
+                    <div class="panel-block">
+                        <div class="is-size-7 has-text-grey" id="presence"></div>
+                    </div>
+                     <div class="panel-block">
+                        <div class="is-size-7 has-text-grey-dark has-text-weight-bold" id="typing"></div>
+                    </div>
+                    <div id="users">
+                        </div>
+                </nav>
+                <button id="logoutBtn" class="button is-fullwidth is-light mt-4">Sair</button>
+            </aside>
+
+            <main class="column">
+                <div class="tabs is-boxed" id="chatTabsContainer">
+                    <ul id="chatTabs">
+                        <li class="is-active" data-target="broadcast"><a>Broadcast</a></li>
+                        </ul>
+                </div>
+
+                <div id="chatBoxes">
+                    <div class="chat-window tab-content is-active" id="tab-broadcast">
+                        </div>
+                    </div>
+
+                <div class="field is-grouped mt-4">
+                    <div class="control is-expanded">
+                        <input id="msg" class="input" type="text" placeholder="Digite sua mensagem" />
+                    </div>
+                    <div class="control">
+                        <button id="sendBtn" class="button is-info">Enviar</button>
+                    </div>
+                    <div class="control">
+                        <button id="clearBtn" class="button">Limpar</button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
     <script src="script.js"></script>
 </body>
 </html>
