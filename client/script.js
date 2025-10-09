@@ -49,13 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // --- Funções de Lógica ---
 
-function log(message) {
-    const logEl = document.getElementById('log');
-    const content = typeof message === 'string' ? message : JSON.stringify(message, null, 2);
-    logEl.textContent += content + '\n';
-    logEl.scrollTop = logEl.scrollHeight; // Auto-scroll
-}
-
 async function handleLogin() {
     currentUser = document.getElementById('username').value;
     const password = document.getElementById('password').value;
@@ -71,7 +64,6 @@ async function handleLogin() {
         const token = await loginApi(currentUser, password);
         authToken = token;
 
-        log("Login bem-sucedido.");
         document.getElementById('loginContainer').style.display = 'none';
         document.getElementById('chatContainer').style.display = 'block';
         document.getElementById('sendBtn').disabled = false;
@@ -81,7 +73,6 @@ async function handleLogin() {
 
     } catch (error) {
         console.error("Erro no login:", error);
-        log("Falha no login.");
         messageEl.textContent = "Usuário ou senha inválidos.";
     }
 }
@@ -90,12 +81,12 @@ function connectWebSocket(token) {
     ws = new WebSocket(wsUrlWithToken(token));
 
     ws.onopen = () => {
-        log("Conectado ao WebSocket.");
+        console.log("Conectado ao WebSocket.");
     };
 
     ws.onmessage = (event) => {
         const msg = JSON.parse(event.data);
-        log(msg); // Loga toda mensagem recebida para debug
+        console.log(msg); 
 
         switch (msg.type) {
             case 'message':
@@ -125,18 +116,18 @@ function connectWebSocket(token) {
                  break;
 
             default:
-                log("Mensagem de tipo desconhecido recebida.");
+                console.log("Mensagem de tipo desconhecido recebida.");
         }
     };
 
     ws.onerror = (event) => {
         console.error("WebSocket error:", event);
-        log("Erro no WebSocket.");
+        console.log("Erro no WebSocket.");
         document.getElementById('sendBtn').disabled = true;
     };
 
     ws.onclose = (event) => {
-        log(`WebSocket fechado: code=${event.code}, reason=${event.reason}`);
+        console.log(`WebSocket fechado: code=${event.code}, reason=${event.reason}`);
         document.getElementById('sendBtn').disabled = true;
     };
 }
@@ -162,7 +153,7 @@ function sendMessage() {
     if (!text) return;
 
     if (!ws || ws.readyState !== WebSocket.OPEN) {
-        log("WebSocket não está conectado.");
+        console.log("WebSocket não está conectado.");
         return;
     }
 
