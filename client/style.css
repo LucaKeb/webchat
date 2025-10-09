@@ -1,0 +1,80 @@
+/* Altura e scroll da janela de chat */
+.chat-window {
+    height: 60vh;
+    min-height: 400px;
+    border: 1px solid #dbdbdb; /* Cor de borda padrão do Bulma */
+    border-top: none;
+    padding: 1rem;
+    overflow-y: auto;
+    display: none; /* Escondido por padrão, JS controla a visibilidade */
+    flex-direction: column;
+    gap: 1rem;
+}
+.chat-window.is-active {
+    display: flex; /* Mostra apenas a aba ativa */
+}
+
+/* Bolinha de status (online/offline) */
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+}
+.user.online .dot { background: #48c78e; } /* Verde do Bulma */
+.user.offline .dot { background: #b5b5b5; } /* Cinza do Bulma */
+.user.offline { color: #7a7a7a; }
+.user.online { cursor: pointer; }
+
+
+/* ===== Mensagens (bubbles) ===== */
+
+/* Contêiner que alinha a mensagem */
+.message-container {
+    display: flex;
+    flex-direction: column;
+    max-width: 70%;
+}
+
+/* Balão da mensagem em si */
+.message-bubble {
+    padding: 0.75em 1em;
+    border-radius: 1.5em;
+    line-height: 1.35;
+    word-wrap: break-word;
+}
+
+/* Informações (autor e hora) */
+.message-meta {
+    font-size: 0.75rem;
+    color: #7a7a7a; /* Cinza do Bulma */
+    margin: 0 0.5em 0.25em;
+}
+
+/* Mensagens enviadas por você (direita) */
+.message-container.is-sender {
+    align-self: flex-end;
+    align-items: flex-end;
+}
+.is-sender .message-bubble {
+    background-color: #3273dc; /* Cor primária do Bulma */
+    color: #fff;
+    border-bottom-right-radius: 0.5em; /* Efeito de "cauda" */
+}
+
+/* Mensagens recebidas (esquerda) */
+.message-container.is-receiver {
+    align-self: flex-start;
+    align-items: flex-start;
+}
+.is-receiver .message-bubble {
+    background-color: #f5f5f5; /* Cinza claro do Bulma */
+    color: #363636;
+    border-bottom-left-radius: 0.5em; /* Efeito de "cauda" */
+}
+
+/* Esconde o botão de fechar da aba Broadcast */
+#chatTabs li[data-target="broadcast"] .delete {
+    display: none;
+}
