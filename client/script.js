@@ -182,7 +182,7 @@ async function refreshUsers() {
     try {
         const [allUsers, onlineUsersSet] = await Promise.all([
             getUsersApi(authToken),
-            getOnlineUsersApi(authToken).then(users => new Set(users))
+            getOnlineUsersApi(authToken).then(users => new Set(users.map(user => user.username)))
         ]);
 
         const usersWithStatus = allUsers
