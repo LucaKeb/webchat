@@ -2,7 +2,7 @@ let ws = null;
 let authToken = null;
 let currentUser = ""; // Armazenar o nome do usuário logado
 
-// Configurações do WebSocket
+// Constantes de Configurações do WebSocket
 const WS_SCHEME = window.location.protocol === "https:" ? "wss" : "ws";
 const WS_HOST = "127.0.0.1:8000";
 
@@ -14,7 +14,7 @@ function wsUrlWithToken(token) {
 
 // Executa quando o HTML da página terminar de carregar
 document.addEventListener('DOMContentLoaded', () => {
-    // Esconde o container do chat inicialmente
+    // Esconde o chat até estar logado
     const chatContainer = document.getElementById('chatContainer');
     chatContainer.style.display = 'none';
 
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (target.classList.contains('delete')) { // Se clicou no botão de fechar (x)
             const tabNameToClose = tabLi.dataset.target;
             closeTab(tabNameToClose);
-        } else if (tabLi) { // Se clicou em uma aba
+        } else if (tabLi) { 
             const tabNameToActivate = tabLi.dataset.target;
             switchTab(tabNameToActivate);
         }

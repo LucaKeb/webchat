@@ -1,17 +1,57 @@
-/* Altura e scroll da janela de chat */
+/* ===== NOVAS REGRAS PARA O LAYOUT ESTILO WHATSAPP ===== */
+html, body {
+    height: 100%;
+    overflow: hidden; 
+}
+
+/* Faz o container principal do chat ocupar toda a altura da tela */
+#chatContainer {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* Faz as colunas crescerem para preencher o espaço vertical do #chatContainer */
+#chatContainer > .columns {
+    flex-grow: 1;
+    margin: 0; 
+}
+
+/* Faz com que o painel de usuários e o chat principal também ocupem toda a altura */
+#chatContainer .column {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* scroll interno se a lista for grande */
+.panel {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.panel #users {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+
+/* ===== ESTILOS ORIGINAIS (mantidos) ===== */
+
 .chat-window {
-    height: 60vh;
-    min-height: 400px;
-    border: 1px solid #dbdbdb; /* Cor de borda padrão do Bulma */
+    flex-grow: 1; 
+    border: 1px solid #dbdbdb; 
     border-top: none;
     padding: 1rem;
     overflow-y: auto;
-    display: none; /* Escondido por padrão, JS controla a visibilidade */
+    display: none; 
     flex-direction: column;
     gap: 1rem;
 }
 .chat-window.is-active {
-    display: flex; /* Mostra apenas a aba ativa */
+    display: flex; 
 }
 
 /* Bolinha de status (online/offline) */
@@ -22,8 +62,8 @@
     display: inline-block;
     margin-right: 8px;
 }
-.user.online .dot { background: #48c78e; } /* Verde do Bulma */
-.user.offline .dot { background: #b5b5b5; } /* Cinza do Bulma */
+.user.online .dot { background: #48c78e; } 
+.user.offline .dot { background: #b5b5b5; } 
 .user.offline { color: #7a7a7a; }
 .user.online { cursor: pointer; }
 
@@ -48,7 +88,7 @@
 /* Informações (autor e hora) */
 .message-meta {
     font-size: 0.75rem;
-    color: #7a7a7a; /* Cinza do Bulma */
+    color: #7a7a7a; 
     margin: 0 0.5em 0.25em;
 }
 
@@ -58,9 +98,9 @@
     align-items: flex-end;
 }
 .is-sender .message-bubble {
-    background-color: #3273dc; /* Cor primária do Bulma */
+    background-color: #3273dc; 
     color: #fff;
-    border-bottom-right-radius: 0.5em; /* Efeito de "cauda" */
+    border-bottom-right-radius: 0.5em; 
 }
 
 /* Mensagens recebidas (esquerda) */
@@ -69,9 +109,21 @@
     align-items: flex-start;
 }
 .is-receiver .message-bubble {
-    background-color: #f5f5f5; /* Cinza claro do Bulma */
+    background-color: #f5f5f5; 
     color: #363636;
-    border-bottom-left-radius: 0.5em; /* Efeito de "cauda" */
+    border-bottom-left-radius: 0.5em; 
+}
+
+.chat-window {
+    height: 60vh;
+    min-height: 400px;
+    border: 1px solid #dbdbdb;
+    border-top: none;
+    padding: 1rem;
+    overflow-y: auto; 
+    display: none;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 /* Esconde o botão de fechar da aba Broadcast */
