@@ -107,6 +107,8 @@ function connectWebSocket(token) {
                 break;
             
             case 'presence':
+                refreshUsers();
+                break;
             case 'system':
                 refreshUsers();
                 break;
