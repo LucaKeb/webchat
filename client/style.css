@@ -1,9 +1,11 @@
 html, body {
     height: 100%;
-    overflow: hidden; 
+    overflow: hidden;
+    background-color: #e5ddd5; /* Fundo típico do WhatsApp */
+    font-family: 'Segoe UI', sans-serif;
 }
 
-/* centralizar o formulário de login */
+/* Centralizar o formulário de login */
 #loginContainer {
     display: flex;
     min-height: 100vh;
@@ -11,32 +13,35 @@ html, body {
     justify-content: center;
 }
 
-/* Faz o container principal do chat ocupar toda a altura da tela */
+/* Container principal do chat */
 #chatContainer {
     display: flex;
     flex-direction: column;
     height: 100vh;
+    background-color: #e5ddd5;
 }
 
-/* Faz as colunas crescerem para preencher o espaço vertical do #chatContainer */
+/* Colunas */
 #chatContainer > .columns {
     flex-grow: 1;
     margin: 0; 
 }
 
-/* Faz com que o painel de usuários e o chat principal também ocupem toda a altura */
+/* Painéis laterais e conteúdo principal */
 #chatContainer .column {
     height: 100%;
     display: flex;
     flex-direction: column;
 }
 
-/* scroll interno se a lista for grande */
+/* Painel de usuários */
 .panel {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
     overflow-y: auto;
+    background-color: #fff;
+    border-right: 1px solid #ccc;
 }
 
 .panel #users {
@@ -44,24 +49,22 @@ html, body {
     overflow-y: auto;
 }
 
-
-/* ===== ESTILOS ORIGINAIS (mantidos) ===== */
-
+/* Janela de chat */
 .chat-window {
     flex-grow: 1; 
-    border: 1px solid #dbdbdb; 
-    border-top: none;
+    background-color: #efeae2;
+    border: none;
     padding: 1rem;
     overflow-y: auto;
     display: none; 
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.75rem;
 }
 .chat-window.is-active {
     display: flex; 
 }
 
-/* Bolinha de status (online/offline) */
+/* Bolinha de status */
 .dot {
     width: 8px;
     height: 8px;
@@ -69,11 +72,10 @@ html, body {
     display: inline-block;
     margin-right: 8px;
 }
-.user.online .dot { background: #48c78e; } 
+.user.online .dot { background: #25d366; } /* Verde WhatsApp */
 .user.offline .dot { background: #b5b5b5; } 
 .user.offline { color: #7a7a7a; }
 .user.online { cursor: pointer; }
-
 
 /* ===== Mensagens (bolhas) ===== */
 
@@ -84,30 +86,31 @@ html, body {
     max-width: 70%;
 }
 
-/* Balão da mensagem em si */
+/* Balão da mensagem */
 .message-bubble {
-    padding: 0.75em 1em;
-    border-radius: 1.5em;
-    line-height: 1.35;
+    padding: 0.6em 0.9em;
+    border-radius: 0.75em;
+    line-height: 1.4;
     word-wrap: break-word;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.1);
 }
 
-/* Informações (autor e hora) */
+/* Info (autor/hora) */
 .message-meta {
-    font-size: 0.75rem;
-    color: #7a7a7a; 
-    margin: 0 0.5em 0.25em;
+    font-size: 0.7rem;
+    color: #777; 
+    margin: 0.2em 0.4em;
 }
 
-/* Mensagens enviadas por você (direita) */
+/* Mensagens enviadas (direita) */
 .message-container.is-sender {
     align-self: flex-end;
     align-items: flex-end;
 }
 .is-sender .message-bubble {
-    background-color: #3273dc; 
-    color: #fff;
-    border-bottom-right-radius: 0.5em; 
+    background-color: #d9fdd3; /* Verde-claro WhatsApp */
+    color: #111;
+    border-bottom-right-radius: 0.3em; 
 }
 
 /* Mensagens recebidas (esquerda) */
@@ -116,24 +119,23 @@ html, body {
     align-items: flex-start;
 }
 .is-receiver .message-bubble {
-    background-color: #f5f5f5; 
-    color: #363636;
-    border-bottom-left-radius: 0.5em; 
-}
-
-.chat-window {
-    height: 60vh;
-    min-height: 400px;
-    border: 1px solid #dbdbdb;
-    border-top: none;
-    padding: 1rem;
-    overflow-y: auto; 
-    display: none;
-    flex-direction: column;
-    gap: 1rem;
+    background-color: #fff;
+    color: #222;
+    border-bottom-left-radius: 0.3em;
 }
 
 /* Esconde o botão de fechar da aba Broadcast */
 #chatTabs li[data-target="broadcast"] .delete {
     display: none;
+}
+
+/* Barra superior (opcional) */
+.header {
+    background-color: #075e54; /* Verde escuro do WhatsApp */
+    color: #fff;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 500;
 }
