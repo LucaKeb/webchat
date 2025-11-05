@@ -203,9 +203,7 @@ function renderUsers(users) {
         userLink.className = `panel-block user ${user.online ? 'online' : 'offline'}`;
         userLink.innerHTML = `<span class="dot"></span> ${user.username}`;
 
-        if (user.online) {
-            userLink.onclick = () => ensureTab(user.username);
-        }
+        userLink.onclick = () => ensureTab(user.username);
         usersContainer.appendChild(userLink);
     });
 }
