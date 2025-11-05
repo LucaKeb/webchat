@@ -13,6 +13,23 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
+import asyncio
+import aio_pika
+from aio_pika import ExchangeType, Message, DeliveryMode
+
+
+# =========================
+# Configuração AMQP
+# =========================
+AMQP_URL = os.getenv("AMQP_URL", "amqp://guest:guest@localhost/")
+
+amqp_conn = None
+amqp_chan = None
+ex_direct = None       # para DMs 
+ex_broadcast = None    # para broadcast (fanout)
+
+user_consumer_tasks = {}  # username -> asyncio.Task
+
 # =========================
 # Configuração
 # =========================
@@ -124,6 +141,84 @@ def healthz():
     return {"status": "ok", "time": _iso()}
 
 # =========================
+# Auxiliares mensageiro
+# =========================
+async def amqp_publish_dm(to_user: str, payload: dict):
+    body = json.dumps(payload).encode("utf-8")
+    await ex_direct.publish(
+        Message(body=body, delivery_mode=DeliveryMode.PERSISTENT),
+        routing_key=to_user,
+    )
+
+async def amqp_publish_broadcast(payload: dict):
+    body = json.dumps(payload).encode("utf-8")
+    await ex_broadcast.publish(
+        Message(body=body, delivery_mode=DeliveryMode.PERSISTENT),
+        routing_key="",
+    )
+
+async def amqp_start_user_consumer(username: str, manager):
+    """
+    Garante a fila do usuário, faz os binds e inicia um consumer assíncrono
+    que repassa o payload pro WebSocket do próprio usuário.
+    """
+    queue = await amqp_chan.declare_queue(
+        f"q.user.{username}", durable=True, auto_delete=False, exclusive=False
+    )
+    await queue.bind(ex_direct, routing_key=username)
+    await queue.bind(ex_broadcast)
+
+    async def _run():
+        async with queue.iterator() as it:
+            async for msg in it:
+                async with msg.process():
+                    try:
+                        obj = json.loads(msg.body.decode("utf-8"))
+                    except Exception:
+                        continue
+                    # empurra pro websocket do usuário via manager existente
+                    await manager.send_to(username, obj)
+
+    task = asyncio.create_task(_run(), name=f"amqp-consumer-{username}")
+    user_consumer_tasks[username] = task
+
+def amqp_stop_user_consumer(username: str):
+    task = user_consumer_tasks.pop(username, None)
+    if task:
+        task.cancel()
+
+# =========================
+# Cria exchanges
+# =========================
+@app.on_event("startup")
+async def _amqp_startup():
+    global amqp_conn, amqp_chan, ex_direct, ex_broadcast
+    amqp_conn = await aio_pika.connect_robust(AMQP_URL)
+    amqp_chan = await amqp_conn.channel()
+    ex_direct = await amqp_chan.declare_exchange("ex.direct", ExchangeType.DIRECT, durable=True)
+    ex_broadcast = await amqp_chan.declare_exchange("ex.broadcast", ExchangeType.FANOUT, durable=True)
+
+    for username in USERS.keys(): # pré criando os canais, e fazendo bind, já que os usuarios sao conhecidos
+        q = await amqp_chan.declare_queue(
+            f"q.user.{username}",
+            durable=True,
+            auto_delete=False,
+            exclusive=False,
+        )
+        await q.bind(ex_direct, routing_key=username)
+        await q.bind(ex_broadcast)  
+    print("Criado Exchanges e filas")
+
+
+@app.on_event("shutdown")
+async def _amqp_shutdown(): 
+    global amqp_conn
+    if amqp_conn:
+        await amqp_conn.close()
+        amqp_conn = None
+
+
+# =========================
 # Camada WebSocket (chat, presença, digitação)
 # FastAPI não tem suporte nativo a sessões ou usuários em WebSocket, 
 # mas tem um modulo WebSocket simples implementado sobre ASGI.
@@ -205,6 +300,9 @@ async def ws_endpoint(websocket: WebSocket, token: Optional[str] = Query(default
 
     # Conecta e anuncia presença
     await manager.connect(username, websocket)
+
+    await amqp_start_user_consumer(username, manager) #inicia o consumer do usuario  
+
     await manager.broadcast({"type": "system", "text": f"{username} entrou no chat.", "timestamp": _iso()})
     await manager.broadcast(manager.roster_payload())
     await manager.broadcast(manager.typing_payload())  # mantém cliente em sincronia
@@ -252,20 +350,37 @@ async def ws_endpoint(websocket: WebSocket, token: Optional[str] = Query(default
                     "to": to_user,
                     "sent_at": _iso(),
                 }
-                if to_user:
-                    ok = await manager.send_to(to_user, payload)
-                    # confirma ao remetente (e informa offline)
-                    ack = {"type": "delivery", "to": to_user, "status": "delivered" if ok else "offline", "timestamp": _iso()}
-                    await manager.send_to(username, ack)
-                else:
-                    await manager.broadcast(payload)
+                
+                try:
+                    if to_user:
+                        await amqp_publish_dm(to_user, payload) # DM
+                    else:
+                        await amqp_publish_broadcast(payload) # Broadcast
+
+                    await manager.send_to(username, {"type":"delivery", "status":"queued", "to":to_user, "timestamp": _iso()})
+
+                except Exception as e:
+                    print(); print(e); print()
+
                 continue
+
+                # if to_user:
+                #     ok = await manager.send_to(to_user, payload)
+                #     # confirma ao remetente (e informa offline)
+                #     ack = {"type": "delivery", "to": to_user, "status": "delivered" if ok else "offline", "timestamp": _iso()}
+                #     await manager.send_to(username, ack)
+                # else:
+                #     await manager.broadcast(payload)
+                # continue
 
             # Mensagens desconhecidas: ignore ou logue
             await manager.send_to(username, {"type": "error", "message": "invalid_payload", "timestamp": _iso()})
 
     except WebSocketDisconnect:
         manager.disconnect(username)
+
+        amqp_stop_user_consumer(username) # Finaliza o consumer do usuario
+
         await manager.broadcast({"type": "system", "text": f"{username} saiu do chat.", "timestamp": _iso()})
         await manager.broadcast(manager.roster_payload())
         await manager.broadcast(manager.typing_payload())
