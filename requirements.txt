@@ -4,3 +4,4 @@ pyjwt
 passlib[bcrypt]
 bcrypt==3.2.2   # compatible with passlib
 python-multipart
+pika
